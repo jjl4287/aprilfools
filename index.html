@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png"> <!-- Spotify Favicon -->
+</head>
+<body>
+
+    <!-- Step 1: Playlist Embed (Initial Bait) -->
+    <div id="spotify-embed" class="spotify-embed">
+        <div class="embed-header">
+            <span class="embed-spotify-logo"></span> <!-- Logo added via CSS -->
+            <!-- Removed header text -->
+        </div>
+        <div class="embed-content">
+            <div class="embed-playlist-art"></div> <!-- Art added via CSS -->
+            <div class="embed-playlist-info">
+                <div class="embed-playlist-title">Banjo Mix</div>
+                <div class="embed-playlist-creator">Made for Karrigan</div> <!-- Updated Name -->
+            </div>
+        </div>
+        <div class="embed-song-list">
+            <!-- Example songs, already styled -->
+            <div class="embed-song"><img src="https://i.scdn.co/image/ab67616d000048518e3e4c37b4ab3b3b1c8f4c5e" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">Blues Run the Game - 2001 Remaster</div>
+            <div class="embed-song"><img src="https://i.scdn.co/image/ab67616d00004851fec9b111ef6a01f718e8f153" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">Little Bit Of Rain</div>
+            <div class="embed-song"><img src="https://i.scdn.co/image/ab67616d000048515f68a41231bb33c288f4157e" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">Ramblin' Man</div>
+            <div class="embed-song"><img src="https://i.scdn.co/image/ab67616d00004851c6a715175c64f66c910d84de" style="width: 20px; height: 20px; margin-right: 8px; vertical-align: middle;">Don't Think Twice, It's All Right</div>
+        </div>
+        <div class="embed-footer">
+            <span class="embed-spotify-text">Spotify</span>
+            <a href="#" class="embed-link" onclick="event.preventDefault(); /* Prevent scroll jump */">open.spotify.com</a>
+        </div>
+    </div>
+
+    <!-- Step 2-4: Fake Spotify UI (Initially Hidden) -->
+    <div id="fake-spotify-ui" class="fake-spotify-ui hidden">
+        <div class="spotify-sidebar">
+            <div class="sidebar-logo">
+                <!-- Using SVG for better quality -->
+                <svg viewBox="0 0 1134 340" class="spotify-logo-svg" style="height: 40px;"><path fill="currentColor" d="M8 171c0 92 76 168 168 168s168-76 168-168S268 4 176 4 8 79 8 171zm230 78c-39-24-89-30-147-17-14 2-16-18-4-20 64-15 119-8 162 19 11 7 0 24-11 18zm17-46c-45-28-114-36-167-20-17 5-21-21-7-25 61-21 134-12 184 22 14 9-8 28-10 13zm5-47c-52-32-140-37-198-21-21 6-25-25-7-30 67-21 163-15 228 28 19 13-10 36-23 23z"/></svg>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="active">Home</li> <!-- Example: Home active -->
+                <li>Search</li>
+                <li>Your Library</li>
+            </ul>
+            <div class="sidebar-playlists">Playlists</div>
+            <!-- Add fake playlists if desired -->
+            <ul class="sidebar-nav">
+                 <li>Chill Mix</li>
+                 <li>Liked Songs</li>
+                 <li>Rock Classics</li>
+                 <li>Focus Flow</li>
+            </ul>
+        </div>
+        <div class="spotify-main-content">
+            <div class="spotify-header">
+                 <!-- Simple Header -->
+                 &lt; &gt; <!-- Fake back/forward -->
+            </div>
+            <div class="spotify-playlist-view">
+                <div class="playlist-header-details">
+                    <div class="playlist-cover-large"></div> <!-- Art added via CSS -->
+                    <div>
+                        <div>Playlist</div>
+                        <h1>This Is Radiohead</h1>
+                        <div>The essential tracks, all in one playlist.</div>
+                        <div><span class="embed-spotify-logo" style="vertical-align: middle;"></span> Spotify • 851,871 saves • 50 songs,&nbsp; approx 3 hr 30 min</div>
+                    </div>
+                </div>
+                <div class="playlist-controls">
+                    <button class="play-button" title="Play">►</button>
+                    <!-- Add other fake icons like heart, download, etc. if needed -->
+                </div>
+                <div id="playlist-track-list" class="playlist-track-list">
+                     <div class="track-header">
+                        <span style="text-align: right;">#</span>
+                        <span>Title</span>
+                        <span>Album</span>
+                        <span>Date Added</span>
+                        <span><svg viewBox="0 0 16 16" height="16" width="16" fill="currentColor"><path d="M7.999 3h-1v5h1V3zm7.001 0h-1v5h1V3zM-0.001 8a8 8 0 1 1 16 0A8 8 0 0 1-0.001 8zM15 8a7 7 0 1 0-14 0 7 7 0 0 0 14 0z"></path></svg></span> <!-- Duration Icon -->
+                    </div>
+                    <!-- Tracks are added by JS -->
+                    <!-- Example placeholder for initial view -->
+                    <div class="track-row" style="opacity: 0.5;">
+                         <span style="text-align: right;">1</span>
+                         <span>Loading tracks...</span>
+                         <span></span>
+                         <span></span>
+                         <span>-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="spotify-player-bar">
+            <!-- Basic player controls -->
+            <div class="player-song-info">Now Playing: <span id="now-playing">Nothing</span></div>
+            <div class="player-controls">[ << ] [ ► ] [ >> ]</div> <!-- Mock Controls -->
+            <div class="player-volume">[ Vol ]</div> <!-- Mock Volume -->
+        </div>
+
+        <!-- Pop-up Notifications Area -->
+        <div id="notification-area" class="notification-area"></div>
+
+        <!-- Step 5: Reveal Message -->
+        <div id="reveal-message" class="reveal-message hidden">
+            <h1>April Fools, Karrigan! ❤️</h1> <!-- Personalized Reveal -->
+            <p>You've been Radiohead-ed!</p>
+            <a href="https://open.spotify.com/" target="_blank" class="spotify-link-button">Go to Real Spotify</a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
