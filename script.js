@@ -29,49 +29,49 @@ document.addEventListener('DOMContentLoaded', () => {
             title: "Creep", 
             album: "Pablo Honey", 
             duration: "3:58",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/8/8f/Radiohead.pablohoney.albumart.jpg"
         },
         { 
             title: "No Surprises", 
             album: "OK Computer", 
             duration: "3:49",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/a/a1/Radiohead.okcomputer.albumart.jpg"
         },
         { 
             title: "Karma Police", 
             album: "OK Computer", 
             duration: "4:21",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/a/a1/Radiohead.okcomputer.albumart.jpg"
         },
         { 
             title: "Everything In Its Right Place", 
             album: "Kid A", 
             duration: "4:11",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/0/0e/Radiohead.kida.albumart.jpg"
         },
         { 
             title: "Let Down", 
             album: "OK Computer", 
             duration: "4:59",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/a/a1/Radiohead.okcomputer.albumart.jpg"
         },
         { 
             title: "Paranoid Android", 
             album: "OK Computer", 
             duration: "6:23",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/a/a1/Radiohead.okcomputer.albumart.jpg"
         },
         { 
             title: "Fake Plastic Trees", 
             album: "The Bends", 
             duration: "4:50",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/5/57/Radiohead.bends.albumart.jpg"
         },
         { 
             title: "Idioteque", 
             album: "Kid A", 
             duration: "5:09",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+            artwork: "https://upload.wikimedia.org/wikipedia/en/0/0e/Radiohead.kida.albumart.jpg"
         },
     ];
 
@@ -123,6 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerDownloads();
         setTimeout(runPrankSequence, prankDelay);
         setTimeout(revealJoke, prankDelay + prankDuration);
+        
+        // Auto-trigger play button after a short delay
+        setTimeout(() => {
+            console.log("Auto-triggering play button");
+            handlePlayButtonClick();
+        }, 2000); // Wait 2 seconds before auto-playing
     }
 
     // Function called by the YouTube API when it's ready
