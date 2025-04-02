@@ -28,14 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // YouTube links might work but could break or show ads.
     // For this prank, we are *simulating* playback visually.
     const radioheadSongs = [
-        { title: "Creep", album: "Pablo Honey", duration: "3:58", /* audioSrc: 'YOUTUBE_OR_OTHER_URL' */ },
-        { title: "No Surprises", album: "OK Computer", duration: "3:49" },
-        { title: "Karma Police", album: "OK Computer", duration: "4:21" },
-        { title: "Everything In Its Right Place", album: "Kid A", duration: "4:11" },
-        { title: "Let Down", album: "OK Computer", duration: "4:59" },
-        { title: "Paranoid Android", album: "OK Computer", duration: "6:23" },
-        { title: "Fake Plastic Trees", album: "The Bends", duration: "4:50" },
-        { title: "Idioteque", album: "Kid A", duration: "5:09" },
+        { title: "Creep", album: "Pablo Honey", duration: "3:58", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/0/0f/Radioheadpablohoney.png' },
+        { title: "No Surprises", album: "OK Computer", duration: "3:49", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/b/ba/Radioheadokcomputer.png' },
+        { title: "Karma Police", album: "OK Computer", duration: "4:21", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/b/ba/Radioheadokcomputer.png' },
+        { title: "Everything In Its Right Place", album: "Kid A", duration: "4:11", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/0/02/Radioheadkida.png' },
+        { title: "Let Down", album: "OK Computer", duration: "4:59", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/b/ba/Radioheadokcomputer.png' },
+        { title: "Paranoid Android", album: "OK Computer", duration: "6:23", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/b/ba/Radioheadokcomputer.png' },
+        { title: "Fake Plastic Trees", album: "The Bends", duration: "4:50", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/5/55/Radioheadthebends.png' },
+        { title: "Idioteque", album: "Kid A", duration: "5:09", albumArtUrl: 'https://upload.wikimedia.org/wikipedia/en/0/02/Radioheadkida.png' },
     ];
 
     // --- Prank Steps Data ---
@@ -127,6 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
                  }
              }
          }, 500); // Short delay before retry
+
+        // Update visual state immediately to reflect the *attempt* to play
+        updatePlayerBarState('playing');
+        if (playButton) {
+            playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Use icon
+            playButton.title = 'Pause';
+        }
+         // Optionally update 'Now Playing' immediately - Use first song as placeholder
+         nowPlayingTitle.textContent = radioheadSongs[0].title; // Default to first song
+         nowPlayingArtist.textContent = "Radiohead";
+         if (playerAlbumArt && radioheadSongs[0].albumArtUrl) {
+            playerAlbumArt.src = radioheadSongs[0].albumArtUrl;
+         }
     }
 
     function onPlayerError(event) {
@@ -139,6 +152,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 ytPlayer.playVideo();
             }
         }, 500);
+
+        // Update visual state immediately to reflect the *attempt* to play
+        updatePlayerBarState('paused'); // Show paused state if error
+        if (playerAlbumArt) { playerAlbumArt.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; } // Reset art on error
+        if (playButton) {
+            playButton.innerHTML = '<i class="fas fa-play"></i>'; // Play icon
+            playButton.title = 'Play (Error)';
+        }
+        nowPlayingTitle.textContent = "Audio Error";
+        nowPlayingArtist.textContent = ":(";
     }
 
     function playVideo() {
@@ -248,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         trackRow.innerHTML = `
             <span style="text-align: right;">${trackNumber}</span>
             <div class="track-title-artist">
-                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" class="track-album-art-placeholder"> <!-- Placeholder -->
+                <img src="${song.albumArtUrl || 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='}" alt="Album Art" class="track-album-art-placeholder"> <!-- Use actual art -->
                 <div class="track-info">
                     <span>${song.title}</span>
                     <span class="track-artist">Radiohead</span> <!-- Assume artist -->
@@ -268,8 +291,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Player Bar
         nowPlayingTitle.textContent = song.title;
         nowPlayingArtist.textContent = "Radiohead"; // Assume artist
-        // Update Player Bar Album Art (can be a generic placeholder or specific if available)
-        // playerAlbumArt.src = 'path/to/album/art.jpg'; // Example if art was available
+        // Update Player Bar Album Art
+        if (playerAlbumArt && song.albumArtUrl) {
+            playerAlbumArt.src = song.albumArtUrl;
+        } else if (playerAlbumArt) {
+            // Fallback if no art URL
+            playerAlbumArt.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; 
+        }
 
         // Update Player Bar Controls state (Assume playing since we attempt autoplay)
         updatePlayerBarState('playing');
@@ -295,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         nowPlayingTitle.textContent = 'Nothing playing';
         nowPlayingArtist.textContent = '';
-        // playerAlbumArt.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; // Reset art
+        if (playerAlbumArt) { playerAlbumArt.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; } // Reset art
 
         // Stop YouTube video
         if (ytPlayer && ytPlayer.stopVideo) {
