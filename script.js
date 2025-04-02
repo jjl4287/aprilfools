@@ -45,11 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let firstSongAdded = false; // Flag to clear placeholder
 
     // --- Initial Setup ---
-    // Personalize the embed
-    const embedCreator = fakeSpotifyUI.querySelector('.embed-playlist-creator');
-    if (embedCreator) {
-        embedCreator.textContent = `Made for ${girlfriendName}`;
-    }
+    // Remove any references to embedCreator or elements inside the old embed
+    // const embedCreator = fakeSpotifyUI.querySelector('.embed-playlist-creator'); // REMOVE or ensure it's not used if class was unique to embed
+    // if (embedCreator) { ... } // REMOVE
+
     // Personalize Reveal Message
     const revealHeader = revealMessage.querySelector('h1');
     if (revealHeader) {
@@ -57,12 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Start Prank on Load ---
-    // Start the prank after a short delay to simulate page loading
+    // Ensure this is called correctly
     setTimeout(startPrank, initialLoadDelay);
 
     // --- Functions ---
     function startPrank() {
-        // UI is already visible, just start the sequence
+        // Ensure no logic here tries to hide an embed or show the main UI
         setTimeout(runPrankSequence, prankDelay);
         setTimeout(revealJoke, prankDelay + prankDuration);
     }

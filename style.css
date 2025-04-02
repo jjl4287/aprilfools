@@ -11,21 +11,6 @@ body {
 }
 
 /* --- Embed Styling - REMOVED --- */
-/*
-.spotify-embed { ... }
-.embed-header { ... }
-.embed-spotify-logo { ... }
-.embed-content { ... }
-.embed-playlist-art { ... }
-.embed-playlist-info { ... }
-.embed-playlist-title { ... }
-.embed-playlist-creator { ... }
-.embed-song-list { ... }
-.embed-song { ... }
-.embed-footer { ... }
-.embed-spotify-text { ... }
-.embed-link { ... }
-*/
 
 /* --- Fake Spotify UI Styling --- */
 .fake-spotify-ui {
