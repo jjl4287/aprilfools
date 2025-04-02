@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const nowPlaying = document.getElementById('now-playing');
     const playButton = document.querySelector('.play-button'); // Get play button
     const playerBarControls = document.querySelector('.spotify-player-bar .player-controls'); // Get player bar controls element
+    const playerBarControlsButtons = document.querySelector('.spotify-player-bar .player-controls-buttons'); // Player bar buttons container
+    const playerBarPlayButton = document.querySelector('.play-button.player'); // Player bar play button
+    const nowPlayingTitle = document.getElementById('now-playing-title'); // Player bar track title
+    const nowPlayingArtist = document.getElementById('now-playing-artist'); // Player bar track artist
+    const playerAlbumArt = document.querySelector('.player-album-art'); // Player bar album art
     const youtubePlayerElement = document.getElementById('youtube-player'); // Get YouTube player div
 
     // --- Configuration ---
@@ -60,33 +65,32 @@ document.addEventListener('DOMContentLoaded', () => {
         revealHeader.textContent = `April Fools, ${girlfriendName}! ❤️`;
     }
 
-    // --- Start Prank on Load ---
-    // Ensure this is called correctly
+    // --- Start Prank on Load --- (No event listener needed here anymore)
     setTimeout(startPrank, initialLoadDelay);
 
     // --- Functions ---
     function startPrank() {
-        // Ensure no logic here tries to hide an embed or show the main UI
-        playVideo(); // Start playing the YouTube video
-        triggerDownloads(); // Attempt to download images
+        // Player creation is handled by onYouTubeIframeAPIReady
+        // triggerDownloads(); // Keep this if you still want the download prank
         setTimeout(runPrankSequence, prankDelay);
         setTimeout(revealJoke, prankDelay + prankDuration);
+        // Attempt to trigger downloads early
+        triggerDownloads(); 
     }
 
     // Function called by the YouTube API when it's ready
     window.onYouTubeIframeAPIReady = function() {
         console.log("YouTube API Ready");
         ytApiReady = true;
-        // If startPrank tried to play the video before API was ready, try again
-        if (youtubePlayerElement && !ytPlayer) {
-             createPlayer();
-        }
+        // If startPrank already ran, create player now
+        // Otherwise, startPrank will create it.
+        createPlayer(); 
     };
 
     function createPlayer() {
-        if (!ytApiReady || !youtubePlayerElement) {
-             console.log("YouTube API not ready or player element not found, player creation deferred.");
-             return; // Don't create player if API isn't ready or element doesn't exist
+        if (!ytApiReady || !youtubePlayerElement || ytPlayer) {
+             console.log("YouTube API not ready, player element not found, or player already exists. Skipping creation.");
+             return; // Don't create player if API isn't ready or element doesn't exist or player exists
         }
         console.log("Creating YouTube Player");
         try {
@@ -109,40 +113,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // The API will call this function when the video player is ready.
     function onPlayerReady(event) {
-        console.log("YouTube Player Ready");
+        console.log("YouTube Player Ready - Attempting Autoplay");
         // Attempt to play immediately and set volume
         event.target.setVolume(100); // Max volume
         event.target.playVideo();
          // Double-check play command due to browser autoplay restrictions
         setTimeout(() => {
-             if (event.target.getPlayerState() !== YT.PlayerState.PLAYING) {
-                 console.log("Retrying playVideo due to potential autoplay block.");
-                 event.target.playVideo();
+             // Check player state exists before calling getPlayerState
+             if (event.target && typeof event.target.getPlayerState === 'function') {
+                 if (event.target.getPlayerState() !== YT.PlayerState.PLAYING) {
+                     console.log("Retrying playVideo due to potential autoplay block.");
+                     event.target.playVideo();
+                 }
              }
          }, 500); // Short delay before retry
     }
 
     function onPlayerError(event) {
         console.error("YouTube Player Error:", event.data);
+        // Optional: Add retry logic if needed, but less critical now it's user-initiated - REVERTING THIS COMMENT
+        // We might still need retry logic for autoplay failures
+        setTimeout(() => {
+            if (ytPlayer && typeof ytPlayer.getPlayerState === 'function' && ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                console.log("Retrying playVideo on existing player instance.");
+                ytPlayer.playVideo();
+            }
+        }, 500);
     }
 
     function playVideo() {
-        if (!ytPlayer) {
-            console.log("Player not initialized yet, creating...");
-            createPlayer(); // Try to create the player
-        } else if (ytPlayer.playVideo) {
+        if (ytPlayer && ytPlayer.playVideo) {
              console.log("Playing video via existing player instance.");
              ytPlayer.setVolume(100);
              ytPlayer.playVideo();
-             // Double-check play command
+             // Optional: Add retry logic if needed, but less critical now it's user-initiated
+             // setTimeout(() => {
+             //     if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+             //         console.log("Retrying playVideo on existing player.");
+             //         ytPlayer.playVideo();
+             //     }
+             // }, 500);
+        } else if (!ytPlayer && ytApiReady) {
+             console.warn("Player not ready when playVideo called, attempting to create and play.");
+             createPlayer(); // Try creating it
+             // Need slight delay for player creation before playing
              setTimeout(() => {
-                 if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
-                     console.log("Retrying playVideo on existing player.");
+                 if (ytPlayer && ytPlayer.playVideo) {
+                     ytPlayer.setVolume(100);
                      ytPlayer.playVideo();
                  }
-             }, 500);
+             }, 500); 
         } else {
-             console.warn("ytPlayer object exists but playVideo method not available?");
+             console.error("Cannot play video. Player not available or API not ready.");
         }
     }
 
@@ -162,6 +184,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(`Error triggering download for ${imageUrl}:`, e);
             }
         });
+        // Update Player Bar Controls state (Assume playing since we attempt autoplay)
+        updatePlayerBarState('playing');
+         // Also update the main playlist button if it exists
+         if (playButton) {
+            playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Use icon
+            playButton.title = 'Pause';
+        }
+
+        // --- Audio Simulation ---
+        console.log(`Simulating playback of: ${radioheadSongs[0].title}`);
     }
 
     function runPrankSequence() {
@@ -215,7 +247,13 @@ document.addEventListener('DOMContentLoaded', () => {
         trackRow.className = 'track-row new-track';
         trackRow.innerHTML = `
             <span style="text-align: right;">${trackNumber}</span>
-            <span>${song.title}</span>
+            <div class="track-title-artist">
+                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" class="track-album-art-placeholder"> <!-- Placeholder -->
+                <div class="track-info">
+                    <span>${song.title}</span>
+                    <span class="track-artist">Radiohead</span> <!-- Assume artist -->
+                </div>
+            </div>
             <span>${song.album}</span>
             <span>Just now</span>
             <span>${song.duration}</span>
@@ -227,25 +265,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playSong(song) {
-        nowPlaying.textContent = `${song.title} - Radiohead`;
+        // Update Player Bar
+        nowPlayingTitle.textContent = song.title;
+        nowPlayingArtist.textContent = "Radiohead"; // Assume artist
+        // Update Player Bar Album Art (can be a generic placeholder or specific if available)
+        // playerAlbumArt.src = 'path/to/album/art.jpg'; // Example if art was available
 
-        // Update Playlist Play button
-        if (playButton) {
-             playButton.textContent = '❚❚'; // Pause symbol
-             playButton.title = 'Pause';
-        }
-        // Update Player Bar Play button symbol (visual simulation)
-        if (playerBarControls) {
-            playerBarControls.innerHTML = '[ << ] [ ❚❚ ] [ >> ]';
+        // Update Player Bar Controls state (Assume playing since we attempt autoplay)
+        updatePlayerBarState('playing');
+         // Also update the main playlist button if it exists
+         if (playButton) {
+            playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Use icon
+            playButton.title = 'Pause';
         }
 
         // --- Audio Simulation ---
-        // If you were to add real audio:
-        // 1. Create an <audio> element or use a library like Howler.js
-        // 2. Get the audio source URL (song.audioSrc)
-        // 3. Load and play the audio: audioElement.src = song.audioSrc; audioElement.play();
-        // 4. Handle errors, loading states, etc.
-        // 5. Potentially disable controls during the 'locked' period
         console.log(`Simulating playback of: ${song.title}`);
     }
 
@@ -254,16 +288,29 @@ document.addEventListener('DOMContentLoaded', () => {
         revealMessage.classList.remove('hidden');
 
         // Reset player state visually
+        updatePlayerBarState('paused'); // Reset player bar
         if (playButton) {
-             playButton.textContent = '►'; // Play symbol
+             playButton.innerHTML = '<i class="fas fa-play"></i>'; // Play icon
              playButton.title = 'Play';
         }
-        if (playerBarControls) {
-             playerBarControls.innerHTML = '[ << ] [ ► ] [ >> ]';
-        }
-        nowPlaying.textContent = 'Nothing';
+        nowPlayingTitle.textContent = 'Nothing playing';
+        nowPlayingArtist.textContent = '';
+        // playerAlbumArt.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; // Reset art
 
-        // If audio was playing, stop it here: audioElement.pause(); audioElement.currentTime = 0;
+        // Stop YouTube video
+        if (ytPlayer && ytPlayer.stopVideo) {
+            console.log("Stopping YouTube video.");
+            ytPlayer.stopVideo();
+        }
+    }
+
+    // Helper to update player bar visual state
+    function updatePlayerBarState(state) {
+        if (playerBarPlayButton) {
+             playerBarPlayButton.innerHTML = state === 'playing' ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+             playerBarPlayButton.title = state === 'playing' ? 'Pause' : 'Play';
+        }
+        // Could update other buttons (like shuffle, repeat) or progress bar here if needed
     }
 
 }); 
