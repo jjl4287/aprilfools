@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const spotifyEmbed = document.getElementById('spotify-embed');
+    // const spotifyEmbed = document.getElementById('spotify-embed'); // REMOVED
     const fakeSpotifyUI = document.getElementById('fake-spotify-ui');
     const revealMessage = document.getElementById('reveal-message');
     const notificationArea = document.getElementById('notification-area');
@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerBarControls = document.querySelector('.spotify-player-bar .player-controls'); // Get player bar controls element
 
     // --- Configuration ---
+    const initialLoadDelay = 1000; // Delay before prank starts (simulates loading)
     const prankDelay = 2500; // milliseconds (2.5 seconds)
     const notificationDuration = 3000; // milliseconds (3 seconds)
     const prankDuration = 18000; // milliseconds (18 seconds)
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initial Setup ---
     // Personalize the embed
-    const embedCreator = spotifyEmbed.querySelector('.embed-playlist-creator');
+    const embedCreator = fakeSpotifyUI.querySelector('.embed-playlist-creator');
     if (embedCreator) {
         embedCreator.textContent = `Made for ${girlfriendName}`;
     }
@@ -55,13 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
         revealHeader.textContent = `April Fools, ${girlfriendName}! ❤️`;
     }
 
-    // --- Event Listeners ---
-    spotifyEmbed.addEventListener('click', startPrank);
+    // --- Start Prank on Load ---
+    // Start the prank after a short delay to simulate page loading
+    setTimeout(startPrank, initialLoadDelay);
 
     // --- Functions ---
     function startPrank() {
-        spotifyEmbed.classList.add('hidden');
-        fakeSpotifyUI.classList.remove('hidden');
+        // UI is already visible, just start the sequence
         setTimeout(runPrankSequence, prankDelay);
         setTimeout(revealJoke, prankDelay + prankDuration);
     }

@@ -4,122 +4,28 @@ body {
     padding: 0;
     background-color: #121212; /* Spotify dark background */
     color: #ffffff;
-    overflow: hidden; /* Prevent scrollbars initially */
 }
 
 .hidden {
     display: none !important; /* Utility class to hide elements */
 }
 
-/* --- Embed Styling --- */
-.spotify-embed {
-    background-color: #191414; /* Darker background for embed container */
-    color: #ffffff;
-    padding: 16px;
-    border-radius: 8px;
-    max-width: 340px; /* Adjusted width */
-    margin: 50px auto;
-    cursor: pointer;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    border: 1px solid #282828; /* Subtle border */
-    overflow: hidden; /* Ensure rounded corners apply to children */
-}
-
-.embed-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.embed-spotify-logo {
-    width: 20px; /* Correct size */
-    height: 20px;
-    margin-right: 8px;
-    /* We need a real Spotify logo URL here */
-    content: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/2048px-Spotify_logo_without_text.svg.png');
-}
-
-/* Removed embed-header text, logo only */
-
-.embed-content {
-    display: flex;
-    align-items: center;
-    background-color: #282828; /* Inner background */
-    padding: 12px;
-    border-radius: 4px;
-    margin-bottom: 12px;
-}
-
-.embed-playlist-art {
-    width: 56px; /* Adjusted size */
-    height: 56px;
-    border-radius: 4px; /* Slightly rounded corners */
-    margin-right: 12px;
-    /* We need a placeholder or real image URL */
-    content: url('https://i.scdn.co/image/ab67706f00000002f1754e8f63f6893a08e1b4e4'); /* Example: Banjo Mix Art */
-}
-
-.embed-playlist-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.embed-playlist-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 4px;
-}
-
-.embed-playlist-creator {
-    font-size: 14px;
-    color: #b3b3b3; /* Lighter grey text */
-}
-
-.embed-song-list {
-    margin-bottom: 12px;
-}
-
-.embed-song {
-    font-size: 14px;
-    padding: 6px 12px; /* Padding for each song */
-    color: #b3b3b3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    border-radius: 4px;
-}
-
-.embed-song:hover {
-    background-color: #3a3a3a; /* Subtle hover effect */
-}
-
-
-.embed-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
-    border-top: 1px solid #282828;
-    padding-top: 12px;
-}
-
-.embed-spotify-text {
-    font-size: 12px;
-    font-weight: bold;
-    color: #b3b3b3;
-}
-
-.embed-link {
-    font-size: 12px;
-    color: #1DB954; /* Spotify Green */
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.embed-link:hover {
-    text-decoration: underline;
-}
+/* --- Embed Styling - REMOVED --- */
+/*
+.spotify-embed { ... }
+.embed-header { ... }
+.embed-spotify-logo { ... }
+.embed-content { ... }
+.embed-playlist-art { ... }
+.embed-playlist-info { ... }
+.embed-playlist-title { ... }
+.embed-playlist-creator { ... }
+.embed-song-list { ... }
+.embed-song { ... }
+.embed-footer { ... }
+.embed-spotify-text { ... }
+.embed-link { ... }
+*/
 
 /* --- Fake Spotify UI Styling --- */
 .fake-spotify-ui {

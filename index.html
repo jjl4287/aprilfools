@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Metadata for Link Previews -->
+    <meta property="og:title" content="Karrigan's banjo playlist" />
+    <meta property="og:image" content="image.png" />
+    <meta property="og:description" content="Listen now on Spotify." /> <!-- Optional: Add description -->
+    <meta name="twitter:card" content="summary_large_image"> <!-- Optional: Twitter card -->
+
     <title>Spotify</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png"> <!-- Spotify Favicon -->
@@ -35,8 +42,8 @@
         </div>
     </div>
 
-    <!-- Step 2-4: Fake Spotify UI (Initially Hidden) -->
-    <div id="fake-spotify-ui" class="fake-spotify-ui hidden">
+    <!-- Step 2-4: Fake Spotify UI (Now loads immediately) -->
+    <div id="fake-spotify-ui" class="fake-spotify-ui">
         <div class="spotify-sidebar">
             <div class="sidebar-logo">
                 <!-- Using SVG for better quality -->
