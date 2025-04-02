@@ -15,6 +15,10 @@
     <link rel="icon" href="https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png"> <!-- Spotify Favicon -->
 </head>
 <body>
+    <!-- YouTube Player Container (initially hidden or positioned off-screen) -->
+    <div id="youtube-player-container">
+        <div id="youtube-player"></div>
+    </div>
 
     <!-- Step 1: Playlist Embed (Initial Bait) - REMOVED -->
 
@@ -96,6 +100,8 @@
         </div>
     </div>
 
+    <!-- YouTube IFrame API (Needs to be before script.js) -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>
 </body>
 </html> 

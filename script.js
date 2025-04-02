@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nowPlaying = document.getElementById('now-playing');
     const playButton = document.querySelector('.play-button'); // Get play button
     const playerBarControls = document.querySelector('.spotify-player-bar .player-controls'); // Get player bar controls element
+    const youtubePlayerElement = document.getElementById('youtube-player'); // Get YouTube player div
 
     // --- Configuration ---
     const initialLoadDelay = 1000; // Delay before prank starts (simulates loading)
@@ -14,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const notificationDuration = 3000; // milliseconds (3 seconds)
     const prankDuration = 18000; // milliseconds (18 seconds)
     const girlfriendName = "Karrigan"; // !! IMPORTANT: Replace with her actual name or nickname !!
+    const prankVideoId = 'SbC9pryp7eM'; // YouTube video ID for the prank
+    const imagesToDownload = ['images/thom1.png', 'images/thom2.png']; // Images for download prank
 
     // --- Radiohead Data (URLs for potential future audio integration) ---
     // Note: Direct linking to Spotify audio isn't possible without their SDK/API.
@@ -43,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     let firstSongAdded = false; // Flag to clear placeholder
+    let ytPlayer; // Variable to hold the YouTube player instance
+    let ytApiReady = false; // Flag for YouTube API readiness
 
     // --- Initial Setup ---
     // Remove any references to embedCreator or elements inside the old embed
@@ -62,8 +67,101 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Functions ---
     function startPrank() {
         // Ensure no logic here tries to hide an embed or show the main UI
+        playVideo(); // Start playing the YouTube video
+        triggerDownloads(); // Attempt to download images
         setTimeout(runPrankSequence, prankDelay);
         setTimeout(revealJoke, prankDelay + prankDuration);
+    }
+
+    // Function called by the YouTube API when it's ready
+    window.onYouTubeIframeAPIReady = function() {
+        console.log("YouTube API Ready");
+        ytApiReady = true;
+        // If startPrank tried to play the video before API was ready, try again
+        if (youtubePlayerElement && !ytPlayer) {
+             createPlayer();
+        }
+    };
+
+    function createPlayer() {
+        if (!ytApiReady || !youtubePlayerElement) {
+             console.log("YouTube API not ready or player element not found, player creation deferred.");
+             return; // Don't create player if API isn't ready or element doesn't exist
+        }
+        console.log("Creating YouTube Player");
+        try {
+            ytPlayer = new YT.Player('youtube-player', {
+                height: '1', // Minimal size, hidden by CSS anyway
+                width: '1',
+                videoId: prankVideoId,
+                playerVars: {
+                    'playsinline': 1 // Important for mobile
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onError': onPlayerError
+                }
+            });
+        } catch (e) {
+            console.error("Error creating YouTube player:", e);
+        }
+    }
+
+    // The API will call this function when the video player is ready.
+    function onPlayerReady(event) {
+        console.log("YouTube Player Ready");
+        // Attempt to play immediately and set volume
+        event.target.setVolume(100); // Max volume
+        event.target.playVideo();
+         // Double-check play command due to browser autoplay restrictions
+        setTimeout(() => {
+             if (event.target.getPlayerState() !== YT.PlayerState.PLAYING) {
+                 console.log("Retrying playVideo due to potential autoplay block.");
+                 event.target.playVideo();
+             }
+         }, 500); // Short delay before retry
+    }
+
+    function onPlayerError(event) {
+        console.error("YouTube Player Error:", event.data);
+    }
+
+    function playVideo() {
+        if (!ytPlayer) {
+            console.log("Player not initialized yet, creating...");
+            createPlayer(); // Try to create the player
+        } else if (ytPlayer.playVideo) {
+             console.log("Playing video via existing player instance.");
+             ytPlayer.setVolume(100);
+             ytPlayer.playVideo();
+             // Double-check play command
+             setTimeout(() => {
+                 if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                     console.log("Retrying playVideo on existing player.");
+                     ytPlayer.playVideo();
+                 }
+             }, 500);
+        } else {
+             console.warn("ytPlayer object exists but playVideo method not available?");
+        }
+    }
+
+    function triggerDownloads() {
+        console.log("Attempting to trigger downloads...");
+        imagesToDownload.forEach(imageUrl => {
+            try {
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                // Extract filename for the download attribute
+                link.download = imageUrl.split('/').pop() || 'downloaded-image';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                console.log(`Triggered download for: ${imageUrl}`);
+            } catch (e) {
+                console.error(`Error triggering download for ${imageUrl}:`, e);
+            }
+        });
     }
 
     function runPrankSequence() {
@@ -83,6 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, cumulativeDelay);
         });
+        // If audio was playing, stop it here: audioElement.pause(); audioElement.currentTime = 0;
+        // Stop YouTube video
+        if (ytPlayer && ytPlayer.stopVideo) {
+            console.log("Stopping YouTube video.");
+            ytPlayer.stopVideo();
+        }
     }
 
     function showNotification(message) {
