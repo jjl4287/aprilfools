@@ -77,40 +77,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Functions ---
     function startPrank() {
-        // Ensure player is created early, but don't play yet
-        if (!ytPlayer && ytApiReady) {
-            createPlayer(); 
+        console.log("Starting prank sequence");
+        // Always try to create the player immediately
+        if (!ytPlayer) {
+            console.log("No player exists, attempting to create one");
+            createPlayer();
         }
-        triggerDownloads(); // Attempt to download images
+        triggerDownloads();
         setTimeout(runPrankSequence, prankDelay);
         setTimeout(revealJoke, prankDelay + prankDuration);
     }
 
     // Function called by the YouTube API when it's ready
     window.onYouTubeIframeAPIReady = function() {
-        console.log("YouTube API Ready");
+        console.log("YouTube API Ready - Creating player immediately");
         ytApiReady = true;
-        // If startPrank already ran, create player now
-        // Otherwise, startPrank will create it.
-        createPlayer(); 
+        createPlayer();
     };
 
     function createPlayer() {
-        if (!ytApiReady || !youtubePlayerElement || ytPlayer) {
-             console.log("YouTube API not ready, player element not found, or player already exists. Skipping creation.");
-             return; // Don't create player if API isn't ready or element doesn't exist or player exists
+        if (!ytApiReady) {
+            console.log("YouTube API not ready yet, will create player when ready");
+            return;
         }
+        if (!youtubePlayerElement) {
+            console.error("YouTube player element not found!");
+            return;
+        }
+        if (ytPlayer) {
+            console.log("Player already exists");
+            return;
+        }
+
         console.log("Creating YouTube Player");
         try {
             ytPlayer = new YT.Player('youtube-player', {
-                height: '1', // Minimal size, hidden by CSS anyway
+                height: '1',
                 width: '1',
                 videoId: prankVideoId,
                 playerVars: {
-                    'playsinline': 1 // Important for mobile
+                    'playsinline': 1,
+                    'controls': 0,
+                    'disablekb': 1,
+                    'enablejsapi': 1,
+                    'fs': 0,
+                    'modestbranding': 1,
+                    'iv_load_policy': 3
                 },
                 events: {
                     'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
                     'onError': onPlayerError
                 }
             });
@@ -119,63 +135,85 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // The API will call this function when the video player is ready.
     function onPlayerReady(event) {
-        console.log("YouTube Player Ready (but not playing yet)");
-        // Don't autoplay here anymore
-        // event.target.setVolume(100);
-        // event.target.playVideo();
+        console.log("YouTube Player Ready");
+        // Set volume to maximum
+        event.target.setVolume(100);
+        console.log("Volume set to:", event.target.getVolume());
+    }
+
+    function onPlayerStateChange(event) {
+        console.log("Player state changed to:", event.data);
+        // If the video ends, replay it
+        if (event.data === YT.PlayerState.ENDED && audioPrankStarted) {
+            event.target.playVideo();
+        }
     }
 
     function onPlayerError(event) {
         console.error("YouTube Player Error:", event.data);
+        // Try to recover from errors
+        if (ytPlayer && audioPrankStarted) {
+            setTimeout(() => {
+                console.log("Attempting to recover from error...");
+                playVideo();
+            }, 1000);
+        }
     }
 
     function playVideo() {
-        if (ytPlayer && ytPlayer.playVideo) {
-             console.log("Playing video via existing player instance.");
-             ytPlayer.setVolume(100);
-             ytPlayer.playVideo();
-             // Optional: Add retry logic if needed, but less critical now it's user-initiated
-             // setTimeout(() => {
-             //     if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
-             //         console.log("Retrying playVideo on existing player.");
-             //         ytPlayer.playVideo();
-             //     }
-             // }, 500);
-        } else if (!ytPlayer && ytApiReady) {
-             console.warn("Player not ready when playVideo called, attempting to create and play.");
-             createPlayer(); // Try creating it
-             // Need slight delay for player creation before playing
-             setTimeout(() => {
-                 if (ytPlayer && ytPlayer.playVideo) {
-                     ytPlayer.setVolume(100);
-                     ytPlayer.playVideo();
-                 }
-             }, 500); 
-        } else {
-             console.error("Cannot play video. Player not available or API not ready.");
+        console.log("Attempting to play video");
+        if (!ytPlayer) {
+            console.error("No YouTube player available!");
+            return;
+        }
+
+        try {
+            // Ensure volume is at maximum
+            ytPlayer.setVolume(100);
+            console.log("Volume set to:", ytPlayer.getVolume());
+            
+            // Start playback
+            ytPlayer.playVideo();
+            
+            // Double-check playback started
+            setTimeout(() => {
+                if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+                    console.log("Playback didn't start, retrying...");
+                    ytPlayer.playVideo();
+                }
+            }, 500);
+        } catch (e) {
+            console.error("Error playing video:", e);
         }
     }
 
     function handlePlayButtonClick() {
         console.log("Play button clicked");
         if (!audioPrankStarted) {
-            console.log("Starting audio prank.");
-            playVideo();
-            audioPrankStarted = true; // Set flag so it only plays on the first click
-            // Visually update the main playlist play button to 'pause'
-             if (playButton) {
-                 playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Use icon
-                 playButton.title = 'Pause';
-             }
-             // Also update the player bar controls visually
-             updatePlayerBarState('playing');
-             // Optionally update 'Now Playing' here too if desired immediately
-             nowPlayingTitle.textContent = "Loading...";
-             nowPlayingArtist.textContent = "";
+            console.log("Starting audio prank");
+            
+            // Ensure player exists and is ready
+            if (!ytPlayer) {
+                console.log("Creating player before playing");
+                createPlayer();
+                // Wait for player to be ready
+                setTimeout(playVideo, 1000);
+            } else {
+                playVideo();
+            }
+            
+            audioPrankStarted = true;
+            
+            // Update UI
+            if (playButton) {
+                playButton.innerHTML = '<i class="fas fa-pause"></i>';
+                playButton.title = 'Pause';
+            }
+            updatePlayerBarState('playing');
+            nowPlayingTitle.textContent = "Loading...";
+            nowPlayingArtist.textContent = "";
         }
-        // Note: This fake button doesn't actually pause/resume after the first click in this setup.
     }
 
     function triggerDownloads() {
