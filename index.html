@@ -10,13 +10,11 @@
     <meta property="og:description" content="Listen now on Spotify." /> <!-- Optional: Add description -->
     <meta name="twitter:card" content="summary_large_image"> <!-- Optional: Twitter card -->
 
-    <title>Spotify - Radiohead Mix</title>
+    <title>Spotify</title>
     <!-- Load Font Awesome for Icons (Optional but Recommended) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="https://open.spotifycdn.com/cdn/images/favicon32.b64ecc03.png"> <!-- Spotify Favicon -->
-    <!-- Add YouTube IFrame API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
 </head>
 <body>
     <!-- YouTube Player Container -->
@@ -26,29 +24,32 @@
 
     <div id="fake-spotify-ui" class="fake-spotify-ui">
         <div class="spotify-sidebar">
-            <div class="spotify-logo">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/168px-Spotify_logo_without_text.svg.png" alt="Spotify Logo">
+            <div class="sidebar-logo">
+                <svg viewBox="0 0 1134 340" class="spotify-logo-svg" style="height: 40px;"><path fill="currentColor" d="M8 171c0 92 76 168 168 168s168-76 168-168S268 4 176 4 8 79 8 171zm230 78c-39-24-89-30-147-17-14 2-16-18-4-20 64-15 119-8 162 19 11 7 0 24-11 18zm17-46c-45-28-114-36-167-20-17 5-21-21-7-25 61-21 134-12 184 22 14 9-8 28-10 13zm5-47c-52-32-140-37-198-21-21 6-25-25-7-30 67-21 163-15 228 28 19 13-10 36-23 23z"/></svg>
             </div>
-            <nav class="spotify-nav">
-                <a href="#" class="active"><i class="fas fa-home"></i> Home</a>
-                <a href="#"><i class="fas fa-search"></i> Search</a>
-                <a href="#"><i class="fas fa-book"></i> Your Library</a>
-                <a href="#"><i class="fas fa-plus-square"></i> Create Playlist</a>
-                <a href="#"><i class="fas fa-heart"></i> Liked Songs</a>
-                <a href="#"><i class="fas fa-list"></i> Your Episodes</a>
-            </nav>
-            <div class="playlist-section">
-                <div class="playlist-header">
-                    <i class="fas fa-plus"></i>
-                    <span>Create Playlist</span>
-                </div>
-                <div class="playlist-list">
-                    <div class="playlist-item active">
-                        <i class="fas fa-music"></i>
-                        <span>Ultimate Radiohead Mix</span>
-                    </div>
-                </div>
+            <ul class="sidebar-nav">
+                <li class="active"><i class="fas fa-home"></i> Home</li>
+                <li><i class="fas fa-search"></i> Search</li>
+                <li><i class="fas fa-book"></i> Your Library</li>
+            </ul>
+            <!-- Placeholder for Create/Liked Buttons -->
+            <div class="sidebar-actions">
+                <div><i class="fas fa-plus-square"></i> Create Playlist</div>
+                <div><i class="fas fa-heart"></i> Liked Songs</div>
             </div>
+            <div class="sidebar-playlists"></div> <!-- Separator now handled by CSS -->
+            <ul class="sidebar-nav sidebar-playlist-list">
+                 <!-- Example playlists (can be static or dynamic) -->
+                 <li>Chill Mix</li>
+                 <li>Rock Classics</li>
+                 <li>Focus Flow</li>
+                 <li>Acoustic Hits</li>
+                 <li>Coding Fuel</li>
+            </ul>
+            <!-- Install App Placeholder -->
+             <div class="sidebar-install">
+                 <i class="fas fa-download"></i> Install App
+             </div>
         </div>
         <div class="spotify-main-content">
             <div class="spotify-header">
@@ -72,10 +73,10 @@
             <div class="spotify-playlist-view">
                 <div class="playlist-header-details">
                     <!-- Smaller Cover Art -->
-                    <img class="playlist-cover-small" src="https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8" alt="Playlist Cover">
+                    <img class="playlist-cover-small" src="https://i.scdn.co/image/ab67706f00000002aa1337cbd9dba11ff679403a" alt="Playlist Cover">
                     <div class="playlist-info">
                         <div>Playlist</div>
-                        <h1>Ultimate Radiohead Mix</h1>
+                        <h1>This Is Radiohead</h1>
                         <!-- Optional: Add description -->
                         <!-- <div class="playlist-description">The essential tracks...</div> -->
                         <div><span class="embed-spotify-logo">Spotify</span> • 851,871 Likes • 50 songs,&nbsp; approx 3 hr 30 min</div>
@@ -152,11 +153,13 @@
         <!-- Step 5: Reveal Message -->
         <div id="reveal-message" class="reveal-message hidden">
             <h1>April Fools!</h1> <!-- Personalized Reveal -->
-            <p>Hope you enjoyed the Radiohead takeover! 😄</p>
+            <p>I made a scammer website for you!</p>
             <a href="https://open.spotify.com/playlist/7CmP2n3KdYaW9OS0eEyp4a" target="_blank" class="spotify-link-button">Go to Real Playlist</a>
         </div>
     </div>
 
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="script.js"></script>
 </body>
 </html> 

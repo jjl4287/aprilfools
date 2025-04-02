@@ -24,55 +24,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagesToDownload = ['images/thom1.png', 'images/thom2.png']; // Images for download prank
 
     // --- Radiohead Data (URLs for potential future audio integration) ---
+    // Note: Direct linking to Spotify audio isn't possible without their SDK/API.
+    // YouTube links might work but could break or show ads.
+    // For this prank, we are *simulating* playback visually.
     const radioheadSongs = [
-        { 
-            title: "Creep", 
-            album: "Pablo Honey", 
-            duration: "3:58",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
-        { 
-            title: "No Surprises", 
-            album: "OK Computer", 
-            duration: "3:49",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
-        { 
-            title: "Karma Police", 
-            album: "OK Computer", 
-            duration: "4:21",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
-        { 
-            title: "Everything In Its Right Place", 
-            album: "Kid A", 
-            duration: "4:11",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
-        { 
-            title: "Let Down", 
-            album: "OK Computer", 
-            duration: "4:59",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
-        { 
-            title: "Paranoid Android", 
-            album: "OK Computer", 
-            duration: "6:23",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
-        { 
-            title: "Fake Plastic Trees", 
-            album: "The Bends", 
-            duration: "4:50",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
-        { 
-            title: "Idioteque", 
-            album: "Kid A", 
-            duration: "5:09",
-            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
-        },
+        { title: "Creep", album: "Pablo Honey", duration: "3:58", /* audioSrc: 'YOUTUBE_OR_OTHER_URL' */ },
+        { title: "No Surprises", album: "OK Computer", duration: "3:49" },
+        { title: "Karma Police", album: "OK Computer", duration: "4:21" },
+        { title: "Everything In Its Right Place", album: "Kid A", duration: "4:11" },
+        { title: "Let Down", album: "OK Computer", duration: "4:59" },
+        { title: "Paranoid Android", album: "OK Computer", duration: "6:23" },
+        { title: "Fake Plastic Trees", album: "The Bends", duration: "4:50" },
+        { title: "Idioteque", album: "Kid A", duration: "5:09" },
     ];
 
     // --- Prank Steps Data ---
@@ -114,56 +77,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Functions ---
     function startPrank() {
-        console.log("Starting prank sequence");
-        // Always try to create the player immediately
-        if (!ytPlayer) {
-            console.log("No player exists, attempting to create one");
-            createPlayer();
+        // Ensure player is created early, but don't play yet
+        if (!ytPlayer && ytApiReady) {
+            createPlayer(); 
         }
-        triggerDownloads();
+        triggerDownloads(); // Attempt to download images
         setTimeout(runPrankSequence, prankDelay);
         setTimeout(revealJoke, prankDelay + prankDuration);
     }
 
     // Function called by the YouTube API when it's ready
     window.onYouTubeIframeAPIReady = function() {
-        console.log("YouTube API Ready - Creating player immediately");
+        console.log("YouTube API Ready");
         ytApiReady = true;
-        createPlayer();
+        // If startPrank already ran, create player now
+        // Otherwise, startPrank will create it.
+        createPlayer(); 
     };
 
     function createPlayer() {
-        if (!ytApiReady) {
-            console.log("YouTube API not ready yet, will create player when ready");
-            return;
+        if (!ytApiReady || !youtubePlayerElement || ytPlayer) {
+             console.log("YouTube API not ready, player element not found, or player already exists. Skipping creation.");
+             return; // Don't create player if API isn't ready or element doesn't exist or player exists
         }
-        if (!youtubePlayerElement) {
-            console.error("YouTube player element not found!");
-            return;
-        }
-        if (ytPlayer) {
-            console.log("Player already exists");
-            return;
-        }
-
         console.log("Creating YouTube Player");
         try {
             ytPlayer = new YT.Player('youtube-player', {
-                height: '1',
+                height: '1', // Minimal size, hidden by CSS anyway
                 width: '1',
                 videoId: prankVideoId,
                 playerVars: {
-                    'playsinline': 1,
-                    'controls': 0,
-                    'disablekb': 1,
-                    'enablejsapi': 1,
-                    'fs': 0,
-                    'modestbranding': 1,
-                    'iv_load_policy': 3
+                    'playsinline': 1 // Important for mobile
                 },
                 events: {
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
                     'onError': onPlayerError
                 }
             });
@@ -172,85 +119,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // The API will call this function when the video player is ready.
     function onPlayerReady(event) {
-        console.log("YouTube Player Ready");
-        // Set volume to maximum
-        event.target.setVolume(100);
-        console.log("Volume set to:", event.target.getVolume());
-    }
-
-    function onPlayerStateChange(event) {
-        console.log("Player state changed to:", event.data);
-        // If the video ends, replay it
-        if (event.data === YT.PlayerState.ENDED && audioPrankStarted) {
-            event.target.playVideo();
-        }
+        console.log("YouTube Player Ready (but not playing yet)");
+        // Don't autoplay here anymore
+        // event.target.setVolume(100);
+        // event.target.playVideo();
     }
 
     function onPlayerError(event) {
         console.error("YouTube Player Error:", event.data);
-        // Try to recover from errors
-        if (ytPlayer && audioPrankStarted) {
-            setTimeout(() => {
-                console.log("Attempting to recover from error...");
-                playVideo();
-            }, 1000);
-        }
     }
 
     function playVideo() {
-        console.log("Attempting to play video");
-        if (!ytPlayer) {
-            console.error("No YouTube player available!");
-            return;
-        }
-
-        try {
-            // Ensure volume is at maximum
-            ytPlayer.setVolume(100);
-            console.log("Volume set to:", ytPlayer.getVolume());
-            
-            // Start playback
-            ytPlayer.playVideo();
-            
-            // Double-check playback started
-            setTimeout(() => {
-                if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
-                    console.log("Playback didn't start, retrying...");
-                    ytPlayer.playVideo();
-                }
-            }, 500);
-        } catch (e) {
-            console.error("Error playing video:", e);
+        if (ytPlayer && ytPlayer.playVideo) {
+             console.log("Playing video via existing player instance.");
+             ytPlayer.setVolume(100);
+             ytPlayer.playVideo();
+             // Optional: Add retry logic if needed, but less critical now it's user-initiated
+             // setTimeout(() => {
+             //     if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
+             //         console.log("Retrying playVideo on existing player.");
+             //         ytPlayer.playVideo();
+             //     }
+             // }, 500);
+        } else if (!ytPlayer && ytApiReady) {
+             console.warn("Player not ready when playVideo called, attempting to create and play.");
+             createPlayer(); // Try creating it
+             // Need slight delay for player creation before playing
+             setTimeout(() => {
+                 if (ytPlayer && ytPlayer.playVideo) {
+                     ytPlayer.setVolume(100);
+                     ytPlayer.playVideo();
+                 }
+             }, 500); 
+        } else {
+             console.error("Cannot play video. Player not available or API not ready.");
         }
     }
 
     function handlePlayButtonClick() {
         console.log("Play button clicked");
         if (!audioPrankStarted) {
-            console.log("Starting audio prank");
-            
-            // Ensure player exists and is ready
-            if (!ytPlayer) {
-                console.log("Creating player before playing");
-                createPlayer();
-                // Wait for player to be ready
-                setTimeout(playVideo, 1000);
-            } else {
-                playVideo();
-            }
-            
-            audioPrankStarted = true;
-            
-            // Update UI
-            if (playButton) {
-                playButton.innerHTML = '<i class="fas fa-pause"></i>';
-                playButton.title = 'Pause';
-            }
-            updatePlayerBarState('playing');
-            nowPlayingTitle.textContent = "Loading...";
-            nowPlayingArtist.textContent = "";
+            console.log("Starting audio prank.");
+            playVideo();
+            audioPrankStarted = true; // Set flag so it only plays on the first click
+            // Visually update the main playlist play button to 'pause'
+             if (playButton) {
+                 playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Use icon
+                 playButton.title = 'Pause';
+             }
+             // Also update the player bar controls visually
+             updatePlayerBarState('playing');
+             // Optionally update 'Now Playing' here too if desired immediately
+             nowPlayingTitle.textContent = "Loading...";
+             nowPlayingArtist.textContent = "";
         }
+        // Note: This fake button doesn't actually pause/resume after the first click in this setup.
     }
 
     function triggerDownloads() {
@@ -323,10 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
         trackRow.innerHTML = `
             <span style="text-align: right;">${trackNumber}</span>
             <div class="track-title-artist">
-                <img src="${song.artwork}" alt="${song.album}" class="track-album-art">
+                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" class="track-album-art-placeholder"> <!-- Placeholder -->
                 <div class="track-info">
                     <span>${song.title}</span>
-                    <span class="track-artist">Radiohead</span>
+                    <span class="track-artist">Radiohead</span> <!-- Assume artist -->
                 </div>
             </div>
             <span>${song.album}</span>
@@ -342,23 +267,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function playSong(song) {
         // Update Player Bar
         nowPlayingTitle.textContent = song.title;
-        nowPlayingArtist.textContent = "Radiohead";
-        
-        // Update Player Bar Album Art
-        const playerAlbumArt = document.querySelector('.player-album-art');
-        if (playerAlbumArt) {
-            playerAlbumArt.src = song.artwork;
-        }
+        nowPlayingArtist.textContent = "Radiohead"; // Assume artist
+        // Update Player Bar Album Art (can be a generic placeholder or specific if available)
+        // playerAlbumArt.src = 'path/to/album/art.jpg'; // Example if art was available
 
         // Update Player Bar Controls state (if audio prank has started)
         if (audioPrankStarted) {
             updatePlayerBarState('playing');
-            if (playButton) {
-                playButton.innerHTML = '<i class="fas fa-pause"></i>';
+             // Also update the main playlist button if it exists
+             if (playButton) {
+                playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Use icon
                 playButton.title = 'Pause';
             }
         }
 
+        // --- Audio Simulation ---
         console.log(`Simulating playback of: ${song.title}`);
     }
 
