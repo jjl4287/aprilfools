@@ -24,18 +24,55 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagesToDownload = ['images/thom1.png', 'images/thom2.png']; // Images for download prank
 
     // --- Radiohead Data (URLs for potential future audio integration) ---
-    // Note: Direct linking to Spotify audio isn't possible without their SDK/API.
-    // YouTube links might work but could break or show ads.
-    // For this prank, we are *simulating* playback visually.
     const radioheadSongs = [
-        { title: "Creep", album: "Pablo Honey", duration: "3:58", /* audioSrc: 'YOUTUBE_OR_OTHER_URL' */ },
-        { title: "No Surprises", album: "OK Computer", duration: "3:49" },
-        { title: "Karma Police", album: "OK Computer", duration: "4:21" },
-        { title: "Everything In Its Right Place", album: "Kid A", duration: "4:11" },
-        { title: "Let Down", album: "OK Computer", duration: "4:59" },
-        { title: "Paranoid Android", album: "OK Computer", duration: "6:23" },
-        { title: "Fake Plastic Trees", album: "The Bends", duration: "4:50" },
-        { title: "Idioteque", album: "Kid A", duration: "5:09" },
+        { 
+            title: "Creep", 
+            album: "Pablo Honey", 
+            duration: "3:58",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
+        { 
+            title: "No Surprises", 
+            album: "OK Computer", 
+            duration: "3:49",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
+        { 
+            title: "Karma Police", 
+            album: "OK Computer", 
+            duration: "4:21",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
+        { 
+            title: "Everything In Its Right Place", 
+            album: "Kid A", 
+            duration: "4:11",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
+        { 
+            title: "Let Down", 
+            album: "OK Computer", 
+            duration: "4:59",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
+        { 
+            title: "Paranoid Android", 
+            album: "OK Computer", 
+            duration: "6:23",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
+        { 
+            title: "Fake Plastic Trees", 
+            album: "The Bends", 
+            duration: "4:50",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
+        { 
+            title: "Idioteque", 
+            album: "Kid A", 
+            duration: "5:09",
+            artwork: "https://i.scdn.co/image/ab67616d00001e02c5c11d48e20c6a9a1b0f0f8"
+        },
     ];
 
     // --- Prank Steps Data ---
@@ -286,10 +323,10 @@ document.addEventListener('DOMContentLoaded', () => {
         trackRow.innerHTML = `
             <span style="text-align: right;">${trackNumber}</span>
             <div class="track-title-artist">
-                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" class="track-album-art-placeholder"> <!-- Placeholder -->
+                <img src="${song.artwork}" alt="${song.album}" class="track-album-art">
                 <div class="track-info">
                     <span>${song.title}</span>
-                    <span class="track-artist">Radiohead</span> <!-- Assume artist -->
+                    <span class="track-artist">Radiohead</span>
                 </div>
             </div>
             <span>${song.album}</span>
@@ -305,21 +342,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function playSong(song) {
         // Update Player Bar
         nowPlayingTitle.textContent = song.title;
-        nowPlayingArtist.textContent = "Radiohead"; // Assume artist
-        // Update Player Bar Album Art (can be a generic placeholder or specific if available)
-        // playerAlbumArt.src = 'path/to/album/art.jpg'; // Example if art was available
+        nowPlayingArtist.textContent = "Radiohead";
+        
+        // Update Player Bar Album Art
+        const playerAlbumArt = document.querySelector('.player-album-art');
+        if (playerAlbumArt) {
+            playerAlbumArt.src = song.artwork;
+        }
 
         // Update Player Bar Controls state (if audio prank has started)
         if (audioPrankStarted) {
             updatePlayerBarState('playing');
-             // Also update the main playlist button if it exists
-             if (playButton) {
-                playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Use icon
+            if (playButton) {
+                playButton.innerHTML = '<i class="fas fa-pause"></i>';
                 playButton.title = 'Pause';
             }
         }
 
-        // --- Audio Simulation ---
         console.log(`Simulating playback of: ${song.title}`);
     }
 
